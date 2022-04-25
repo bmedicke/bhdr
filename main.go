@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/bmedicke/bhdr/util"
 
 	"github.com/gdamore/tcell/v2"
@@ -67,8 +65,7 @@ func main() {
 			case 'i': // print information about current node.
 				if parent := util.GetParent(selection, rootNode); parent != nil {
 					t := "parent: " + parent.GetText() +
-						"\ncurrent: " + selection.GetText() +
-						fmt.Sprintf("%T", event.Rune)
+						"\ncurrent: " + selection.GetText()
 					status.SetText(t)
 				} else {
 					t := "no parent found" +
