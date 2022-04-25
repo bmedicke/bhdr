@@ -1,6 +1,11 @@
 package main
 
 import (
+	"encoding/json"
+	"log"
+	"os"
+
+	"github.com/bmedicke/bhdr/homeassistant"
 	"github.com/bmedicke/bhdr/util"
 
 	"github.com/gdamore/tcell/v2"
@@ -8,12 +13,22 @@ import (
 )
 
 func main() {
-	rootNode := tview.NewTreeNode(".")
-	rootNode.SetSelectable(false)
+	// read config file:
+	haConfigFile, err := os.Open("bhdr.json")
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	haEntities := tview.NewTreeNode("home-assistant")
+	// unmarshel config:
+	var haConfig homeassistant.Config
+	jsonParser := json.NewDecoder(haConfigFile)
+	err = jsonParser.Decode(&haConfig)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// fill haEntities with nodes:
+	haEntities := tview.NewTreeNode("home-assistant")
 	entityNames := []string{"edison", "hue", "fan"} // TODO: read from json.
 	for _, name := range entityNames {
 		entity := tview.NewTreeNode(name)
