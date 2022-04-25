@@ -1,6 +1,7 @@
 package homeassistant
 
 import (
+	"bytes"
 	"encoding/json"
 	"log"
 	"net/url"
@@ -59,5 +60,8 @@ func getMessage(connnection *websocket.Conn) string {
 	message := make(map[string]interface{})
 	connnection.ReadJSON(&message)
 	bytestring, _ := json.Marshal(message)
-	return string(bytestring)
+
+	var pretty bytes.Buffer
+	json.Indent(&pretty, bytestring, "", "  ")
+	return string(pretty.Bytes())
 }
