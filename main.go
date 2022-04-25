@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/bmedicke/bhdr/util"
 
 	"github.com/gdamore/tcell/v2"
@@ -50,53 +52,32 @@ func main() {
 	app.SetRoot(layout, true)
 	app.SetFocus(switches)
 
-	// TODO: extract custom vim functionality.
+	// keybindings:
 	switches.SetInputCapture(
 		func(event *tcell.EventKey) *tcell.EventKey {
-			sel := switches.GetCurrentNode()
+			selection := switches.GetCurrentNode()
 			switch event.Rune() {
-			case 'J', 'K': // remove default bindings.
+			case 'J', 'K': // disable tview's default bindings.
 				return nil
-			case 'H': // collapse everything but the root node.
-				// calling .CollapseAll() on the children of rootNode
-				// does not work for some reason. do it manually:
-				rootNode.Walk(func(node, parent *tview.TreeNode) bool {
-					if parent != nil {
-						node.Collapse()
-					}
-					return true // visit all nodes.
-				})
-			case 'L': // expand everything.
-				rootNode.ExpandAll()
+			case 'H', 'L', 'h', 'l': // use custom vi bindings:
+				return util.IntuitiveViBindings(event.Rune(), switches)
 			case 'q': // quit the program.
 				app.Stop()
-			case '[': // TODO: jump to previous node on same level.
-				break
-			case ']': // TODO: jump to next node on same level.
-				break
-			case 'h': // move up OR collapse node.
-				if sel.IsExpanded() && nil != sel.GetChildren() {
-					sel.Collapse()
-				} else if sel.GetLevel() > 1 {
-					parent := util.GetParent(sel, rootNode)
-					switches.SetCurrentNode(parent)
-				}
-			case 'l': // expand node.
-				if !sel.IsExpanded() {
-					sel.Expand()
-				}
-			case ';', '\'': // TODO: toggle entities, etc...
-				status.SetText(string(event.Rune()) + " on " + sel.GetText())
 			case 'i': // print information about current node.
-				if parent := util.GetParent(sel, rootNode); parent != nil {
+				if parent := util.GetParent(selection, rootNode); parent != nil {
 					t := "parent: " + parent.GetText() +
-						"\ncurrent: " + sel.GetText()
+						"\ncurrent: " + selection.GetText() +
+						fmt.Sprintf("%T", event.Rune)
 					status.SetText(t)
 				} else {
 					t := "no parent found" +
-						"\ncurrent: " + sel.GetText()
+						"\ncurrent: " + selection.GetText()
 					status.SetText(t)
 				}
+			case ';', '\'': // TODO: toggle entities, etc...
+				status.SetText(
+					string(event.Rune()) + " on " + selection.GetText(),
+				)
 			}
 			return event
 		},
@@ -108,6 +89,7 @@ func main() {
 	// handle focusing a node:
 	switches.SetChangedFunc(func(node *tview.TreeNode) {})
 
+	// preselect node and start app:
 	switches.SetCurrentNode(rootNode)
 	app.Run()
 }
