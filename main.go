@@ -109,12 +109,27 @@ func main() {
 	// handle pressing Enter on a node:
 	switches.SetSelectedFunc(func(node *tview.TreeNode) {})
 
-	// handle focusing a node:
+	// called when focusing a node:
 	switches.SetChangedFunc(
 		func(node *tview.TreeNode) { status.SetTitle(node.GetText()) },
 	)
 
-	// preselect node and start app:
-	switches.SetCurrentNode(rootNode)
+	// preselect node:
+	switches.SetCurrentNode(switchesRoot)
+
+	// listen to Home Assistant events:
+	haEvents := make(chan string)
+	go homeassistant.GetEvents(haConfig, haEvents)
+
+	// handle Home Assistant events:
+	go func() {
+		for {
+			if logs != nil {
+				logs.SetText(logs.GetText(true) + "\n" + <-haEvents)
+				app.Draw() // required for external changes not based on key presses.
+			}
+		}
+	}()
+
 	app.Run()
 }
