@@ -25,7 +25,8 @@ func main() {
 	rootNode.AddChild(
 		tview.NewTreeNode("localFunctions").
 			AddChild(tview.NewTreeNode("func0")).
-			AddChild(tview.NewTreeNode("func1")),
+			AddChild(tview.NewTreeNode("func1").
+				AddChild(tview.NewTreeNode("sub0"))),
 	)
 
 	// create the status view:
@@ -49,36 +50,44 @@ func main() {
 	app.SetRoot(layout, true)
 	app.SetFocus(switches)
 
-	// TODO: extract.
+	// TODO: extract custom vim functionality.
 	switches.SetInputCapture(
 		func(event *tcell.EventKey) *tcell.EventKey {
 			sel := switches.GetCurrentNode()
 			switch event.Rune() {
-			default:
-				break
-			case 'J', 'K':
+			case 'J', 'K': // remove default bindings.
 				return nil
-			case 'q':
+			case 'H': // collapse everything but the root node.
+				// calling .CollapseAll() on the children of rootNode
+				// does not work for some reason. do it manually:
+				rootNode.Walk(func(node, parent *tview.TreeNode) bool {
+					if parent != nil {
+						node.Collapse()
+					}
+					return true // visit all nodes.
+				})
+			case 'L': // expand everything.
+				rootNode.ExpandAll()
+			case 'q': // quit the program.
 				app.Stop()
-			case '[':
-				break // TODO: jump to previous node on same level.
-			case ']':
-				break // TODO: jump to next node on same level.
-			case 'h':
+			case '[': // TODO: jump to previous node on same level.
+				break
+			case ']': // TODO: jump to next node on same level.
+				break
+			case 'h': // move up OR collapse node.
 				if sel.IsExpanded() && nil != sel.GetChildren() {
 					sel.Collapse()
 				} else if sel.GetLevel() > 1 {
 					parent := util.GetParent(sel, rootNode)
 					switches.SetCurrentNode(parent)
 				}
-			case 'l':
+			case 'l': // expand node.
 				if !sel.IsExpanded() {
 					sel.Expand()
-				} else {
 				}
-			case ';', '\'':
+			case ';', '\'': // TODO: toggle entities, etc...
 				status.SetText(string(event.Rune()) + " on " + sel.GetText())
-			case 'p':
+			case 'i': // print information about current node.
 				if parent := util.GetParent(sel, rootNode); parent != nil {
 					t := "parent: " + parent.GetText() +
 						"\ncurrent: " + sel.GetText()
