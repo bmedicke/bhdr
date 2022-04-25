@@ -1,7 +1,6 @@
 package util
 
 import (
-	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
@@ -35,10 +34,7 @@ func GetParent(
 // L: recursively expand all nodes.
 // h: collapse OR move up (if already collapsed or not folder)
 // l: expand node without switching.
-func IntuitiveViBindings(
-	rune int32,
-	view *tview.TreeView,
-) *tcell.EventKey {
+func IntuitiveViBindings(rune int32, view *tview.TreeView) {
 	selection := view.GetCurrentNode()
 
 	switch rune {
@@ -67,5 +63,4 @@ func IntuitiveViBindings(
 			selection.Expand()
 		}
 	}
-	return nil // disable default functionality.
 }

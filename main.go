@@ -60,7 +60,8 @@ func main() {
 			case 'J', 'K': // disable tview's default bindings.
 				return nil
 			case 'H', 'L', 'h', 'l': // use custom vi bindings:
-				return util.IntuitiveViBindings(event.Rune(), switches)
+				util.IntuitiveViBindings(event.Rune(), switches)
+				return nil // disable defaults.
 			case 'q': // quit the program.
 				app.Stop()
 			case 'i': // print information about current node.
