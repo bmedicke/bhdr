@@ -39,7 +39,7 @@ func main() {
 	)
 
 	root := tview.NewFlex()
-	root.SetBorder(true).SetTitle("beholder")
+	root.SetBorder(true).SetTitle("B H 🐙 D R")
 	root.AddItem(ha, 0, 1, false)
 	root.AddItem(status, 0, 1, false)
 
