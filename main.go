@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/bmedicke/bhdr/util"
+
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
@@ -67,7 +69,7 @@ func main() {
 			case ';', '\'':
 				status.SetText(string(event.Rune()) + " on " + sel.GetText())
 			case 'p':
-				if parent := GetParent(sel, rootNode); parent != nil {
+				if parent := util.GetParent(sel, rootNode); parent != nil {
 					status.SetText("parent: " + parent.GetText())
 				} else {
 					status.SetText("no parent found")
@@ -85,30 +87,4 @@ func main() {
 
 	switches.SetCurrentNode(rootNode)
 	app.Run()
-}
-
-// GetParent returns parent or nil (if it was not found).
-// https://github.com/rivo/tview/issues/246#issuecomment-471173854
-// TODO: extract.
-func GetParent(
-	node, root *tview.TreeNode,
-) *tview.TreeNode {
-	var match *tview.TreeNode
-
-	// walk the tree to find our node (and thus its parent):
-	root.Walk(
-		func(current, parent *tview.TreeNode) bool {
-			// current node found:
-			if current == node {
-				if parent != nil {
-					match = parent
-				}
-				// stop walk:
-				return false
-			}
-			// current node not found, continue walk:
-			return true
-		},
-	)
-	return match
 }
