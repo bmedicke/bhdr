@@ -69,7 +69,7 @@ func main() {
 	layout.SetBorder(true).SetTitle("B H 🐙 D R")
 	layout.AddItem(switches, 0, 1, false)
 	layout.AddItem(status, 0, 1, false)
-	layout.AddItem(logs, 0, 1, false)
+	layout.AddItem(logs, 0, 2, false)
 
 	// create the app:
 	app := tview.NewApplication()
@@ -109,6 +109,8 @@ func main() {
 	logs.SetInputCapture(
 		func(event *tcell.EventKey) *tcell.EventKey {
 			switch event.Rune() {
+			case 'd':
+				logs.SetText("")
 			}
 			return event
 		},
@@ -152,7 +154,8 @@ func main() {
 	go func() {
 		for {
 			if logs != nil {
-				logs.SetText(logs.GetText(true) + "\n" + <-haEvents)
+				message := <-haEvents // get message before GetText()!
+				logs.SetText(logs.GetText(true) + "\n" + message)
 				app.Draw() // required for external changes not based on key presses.
 			}
 		}
