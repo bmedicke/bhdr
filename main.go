@@ -36,13 +36,22 @@ func main() {
 		haEntities.AddChild(entity)
 	}
 
-	rootNode.AddChild(haEntities)
-	rootNode.AddChild(
-		tview.NewTreeNode("localFunctions").
-			AddChild(tview.NewTreeNode("func0")).
-			AddChild(tview.NewTreeNode("func1").
-				AddChild(tview.NewTreeNode("sub0"))),
+	// create root tree node for the switches view:
+	switchesRoot := tview.NewTreeNode(".")
+	switchesRoot.SetSelectable(false)
+
+	// attach subnodes:
+	switchesRoot.AddChild(haEntities)
+	switchesRoot.AddChild(
+		tview.NewTreeNode("lorem").
+			AddChild(tview.NewTreeNode("ipsum")).
+			AddChild(tview.NewTreeNode("dolor").
+				AddChild(tview.NewTreeNode("sit"))),
 	)
+
+	// create the logs view:
+	logs := tview.NewTextView()
+	logs.SetTitle("logs").SetBorder(true)
 
 	// create the status view:
 	status := tview.NewTextView()
@@ -51,14 +60,15 @@ func main() {
 	// create the switches view:
 	switches := tview.NewTreeView()
 	switches.SetBorder(true).SetTitle("switches")
-	switches.SetRoot(rootNode)
-	switches.SetTopLevel(1)
+	switches.SetRoot(switchesRoot)
+	switches.SetTopLevel(1) // hide root node.
 
 	// create the layout:
 	layout := tview.NewFlex()
 	layout.SetBorder(true).SetTitle("B H 🐙 D R")
 	layout.AddItem(switches, 0, 1, false)
 	layout.AddItem(status, 0, 1, false)
+	layout.AddItem(logs, 0, 1, false)
 
 	// create the app:
 	app := tview.NewApplication()
@@ -78,7 +88,7 @@ func main() {
 			case 'q': // quit the program.
 				app.Stop()
 			case 'i': // print information about current node.
-				if parent := util.GetParent(selection, rootNode); parent != nil {
+				if parent := util.GetParent(selection, switchesRoot); parent != nil {
 					t := "parent: " + parent.GetText() +
 						"\ncurrent: " + selection.GetText()
 					status.SetText(t)
