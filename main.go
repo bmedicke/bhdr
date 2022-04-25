@@ -60,6 +60,7 @@ func main() {
 	// create the switches view:
 	switches := tview.NewTreeView()
 	switches.SetBorder(true).SetTitle("switches")
+	switches.SetBorderColor(tcell.ColorGreen)
 	switches.SetRoot(switchesRoot)
 	switches.SetTopLevel(1) // hide root node.
 
@@ -75,7 +76,7 @@ func main() {
 	app.SetRoot(layout, true)
 	app.SetFocus(switches)
 
-	// keybindings:
+	// switches keybindings:
 	switches.SetInputCapture(
 		func(event *tcell.EventKey) *tcell.EventKey {
 			selection := switches.GetCurrentNode()
@@ -85,8 +86,6 @@ func main() {
 			case 'H', 'L', 'h', 'l': // use custom vi bindings:
 				util.IntuitiveViBindings(event.Rune(), switches)
 				return nil // disable defaults.
-			case 'q': // quit the program.
-				app.Stop()
 			case 'i': // print information about current node.
 				if parent := util.GetParent(selection, switchesRoot); parent != nil {
 					t := "parent: " + parent.GetText() +
@@ -101,6 +100,34 @@ func main() {
 				status.SetText(
 					string(event.Rune()) + " on " + selection.GetText(),
 				)
+			}
+			return event
+		},
+	)
+
+	// logs keybindings:
+	logs.SetInputCapture(
+		func(event *tcell.EventKey) *tcell.EventKey {
+			switch event.Rune() {
+			}
+			return event
+		},
+	)
+
+	// global keybindings:
+	app.SetInputCapture(
+		func(event *tcell.EventKey) *tcell.EventKey {
+			switch event.Rune() {
+			case '[': // focus switches view.
+				app.SetFocus(switches)
+				switches.SetBorderColor(tcell.ColorGreen)
+				logs.SetBorderColor(tcell.ColorWhite)
+			case ']': // focus logs view.
+				app.SetFocus(logs)
+				switches.SetBorderColor(tcell.ColorWhite)
+				logs.SetBorderColor(tcell.ColorGreen)
+			case 'q': // quit the program.
+				app.Stop()
 			}
 			return event
 		},
