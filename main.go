@@ -56,6 +56,8 @@ func main() {
 			switch event.Rune() {
 			default:
 				break
+			case 'J', 'K':
+				return nil
 			case 'q':
 				app.Stop()
 			case '[':
@@ -63,16 +65,28 @@ func main() {
 			case ']':
 				break // TODO: jump to next node on same level.
 			case 'h':
-				sel.Collapse()
+				if sel.IsExpanded() && nil != sel.GetChildren() {
+					sel.Collapse()
+				} else if sel.GetLevel() > 1 {
+					parent := util.GetParent(sel, rootNode)
+					switches.SetCurrentNode(parent)
+				}
 			case 'l':
-				sel.Expand()
+				if !sel.IsExpanded() {
+					sel.Expand()
+				} else {
+				}
 			case ';', '\'':
 				status.SetText(string(event.Rune()) + " on " + sel.GetText())
 			case 'p':
 				if parent := util.GetParent(sel, rootNode); parent != nil {
-					status.SetText("parent: " + parent.GetText())
+					t := "parent: " + parent.GetText() +
+						"\ncurrent: " + sel.GetText()
+					status.SetText(t)
 				} else {
-					status.SetText("no parent found")
+					t := "no parent found" +
+						"\ncurrent: " + sel.GetText()
+					status.SetText(t)
 				}
 			}
 			return event
