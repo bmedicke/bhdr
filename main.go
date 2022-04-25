@@ -12,7 +12,7 @@ func main() {
 	haEntities := tview.NewTreeNode("home-assistant")
 
 	// fill haEntities with nodes:
-	entityNames := []string{"edison", "hue", "fan"}
+	entityNames := []string{"edison", "hue", "fan"} // TODO: read from json.
 	for _, name := range entityNames {
 		entity := tview.NewTreeNode(name)
 		entity.SetReference("ref for " + name)
@@ -26,23 +26,28 @@ func main() {
 			AddChild(tview.NewTreeNode("func1")),
 	)
 
+	// create the status view:
 	status := tview.NewTextView()
 	status.SetBorder(true)
 
+	// create the switches view:
 	switches := tview.NewTreeView()
 	switches.SetBorder(true).SetTitle("switches")
 	switches.SetRoot(rootNode)
 	switches.SetTopLevel(1)
 
+	// create the layout:
 	layout := tview.NewFlex()
 	layout.SetBorder(true).SetTitle("B H 🐙 D R")
 	layout.AddItem(switches, 0, 1, false)
 	layout.AddItem(status, 0, 1, false)
 
+	// create the app:
 	app := tview.NewApplication()
 	app.SetRoot(layout, true)
 	app.SetFocus(switches)
 
+	// TODO: extract.
 	switches.SetInputCapture(
 		func(event *tcell.EventKey) *tcell.EventKey {
 			sel := switches.GetCurrentNode()
@@ -72,18 +77,19 @@ func main() {
 		},
 	)
 
-	// press Enter on node:
+	// handle pressing Enter on a node:
 	switches.SetSelectedFunc(func(node *tview.TreeNode) {})
 
-	// select node:
+	// handle focusing a node:
 	switches.SetChangedFunc(func(node *tview.TreeNode) {})
 
 	switches.SetCurrentNode(rootNode)
 	app.Run()
 }
 
-// GetParent returns parent or nil if it was not found.
+// GetParent returns parent or nil (if it was not found).
 // https://github.com/rivo/tview/issues/246#issuecomment-471173854
+// TODO: extract.
 func GetParent(
 	node, root *tview.TreeNode,
 ) *tview.TreeNode {
