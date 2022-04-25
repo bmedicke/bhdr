@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# error out if go is not installed:
+if ! command -v go &> /dev/null
+then
+  echo "❌ go not found, but required for pre-commit hook."
+  exit 1
+fi
+
+# recusively get all files, except those in /vendor:
+FILES=$(go list ./... | grep -v /vendor)
+
+# try to build all files:
+go build $FILES
+
+if [ $? -ne 0 ]
+then
+  echo "❌ pre-commit hook failed."
+  exit 1
+else
+  echo "✔️ pre-commit hook succeeded."
+  exit 0
+fi
+
