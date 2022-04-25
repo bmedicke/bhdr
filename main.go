@@ -85,7 +85,9 @@ func main() {
 	switches.SetSelectedFunc(func(node *tview.TreeNode) {})
 
 	// handle focusing a node:
-	switches.SetChangedFunc(func(node *tview.TreeNode) {})
+	switches.SetChangedFunc(
+		func(node *tview.TreeNode) { status.SetTitle(node.GetText()) },
+	)
 
 	// preselect node and start app:
 	switches.SetCurrentNode(rootNode)
