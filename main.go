@@ -9,7 +9,7 @@ import (
 
 func main() {
 	rootNode := tview.NewTreeNode(".")
-	// rootNode.SetSelectable(false)
+	rootNode.SetSelectable(false)
 
 	haEntities := tview.NewTreeNode("home-assistant")
 
