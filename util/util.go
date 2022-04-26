@@ -98,3 +98,38 @@ func CreateFileIfNotExist(file string, content string) error {
 	}
 	return nil
 }
+
+// HandleChords is great (TRUE=CONTINUE)
+func HandleChords(chords string) bool {
+	switch chords[0] {
+	case 'c':
+		// fmt.Println("change")
+	case 'd':
+		// fmt.Println("delete")
+	default:
+		return false
+	}
+
+	if len(chords) > 1 {
+		switch chords[1] {
+		case 'b':
+			// fmt.Println("brightness")
+		case 'c':
+			fmt.Println("toggle")
+			return false
+		default:
+			return false
+		}
+	}
+
+	if len(chords) > 2 {
+		switch chords[2] {
+		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+			fmt.Println(chords)
+			return false
+		default:
+			return false
+		}
+	}
+	return true
+}

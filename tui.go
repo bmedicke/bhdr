@@ -84,29 +84,42 @@ func spawnTUI(haConfig homeassistant.Config) {
 	app.SetFocus(switches)
 
 	// switches keybindings:
+	chordmode := false
+	chordbuffer := ""
+
 	switches.SetInputCapture(
 		func(event *tcell.EventKey) *tcell.EventKey {
 			selection := switches.GetCurrentNode()
-			switch event.Rune() {
-			case 'J', 'K': // disable tview's default bindings.
-				return nil
-			case 'H', 'L', 'h', 'l': // use custom vi bindings:
-				util.IntuitiveViBindings(event.Rune(), switches)
-				return nil // disable defaults.
-			case 'i': // print information about current node.
-				if parent := util.GetParent(selection, switchesRoot); parent != nil {
-					t := "parent: " + parent.GetText() +
-						"\ncurrent: " + selection.GetText()
-					status.SetText(t)
-				} else {
-					t := "no parent found" +
-						"\ncurrent: " + selection.GetText()
-					status.SetText(t)
-				}
-			case ';': // toggle entity.
-				haCommands <- homeassistant.Command{
-					EntityID: fmt.Sprint(selection.GetReference()),
-					Service:  "toggle",
+			if chordmode {
+				// TODO CLEAN UP!
+				chordbuffer += string(event.Rune())
+				chordmode = util.HandleChords(chordbuffer)
+			} else {
+				switch event.Rune() {
+				case 'J', 'K': // disable tview's default bindings.
+					return nil
+				case 'H', 'L', 'h', 'l': // use custom vi bindings:
+					util.IntuitiveViBindings(event.Rune(), switches)
+					return nil // disable defaults.
+					// TODO CLEAN UP!
+				case 'c', 'd', 'a':
+					chordbuffer = string(event.Rune())
+					chordmode = util.HandleChords(chordbuffer)
+				case 'i': // print information about current node.
+					if parent := util.GetParent(selection, switchesRoot); parent != nil {
+						t := "parent: " + parent.GetText() +
+							"\ncurrent: " + selection.GetText()
+						status.SetText(t)
+					} else {
+						t := "no parent found" +
+							"\ncurrent: " + selection.GetText()
+						status.SetText(t)
+					}
+				case ';': // toggle entity.
+					haCommands <- homeassistant.Command{
+						EntityID: fmt.Sprint(selection.GetReference()),
+						Service:  "toggle",
+					}
 				}
 			}
 			return event
