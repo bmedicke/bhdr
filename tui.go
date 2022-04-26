@@ -119,7 +119,7 @@ func spawnTUI(haConfig homeassistant.Config) {
 			case 'd':
 				logs.SetText("")
 			case 'w':
-				util.CreateFileIfNotExist("bhdr_log.json", logs.GetText(true))
+				util.OverwriteFile("bhdr_log.json", logs.GetText(true))
 			}
 			return event
 		},
