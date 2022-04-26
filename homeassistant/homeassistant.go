@@ -46,7 +46,7 @@ func Connect(config Config, events chan string, commands chan Command) {
 
 	// authenticate:
 	connection.WriteJSON(
-		map[string]interface{}{
+		map[string]string{
 			"type":         "auth",
 			"access_token": config.Token,
 		},
