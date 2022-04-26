@@ -1,6 +1,10 @@
 package util
 
 import (
+	"errors"
+	"fmt"
+	"os"
+
 	"github.com/rivo/tview"
 )
 
@@ -63,4 +67,21 @@ func IntuitiveViBindings(rune int32, view *tview.TreeView) {
 			selection.Expand()
 		}
 	}
+}
+
+// CreateFileIfNotExist creates a file with a string as content.
+func CreateFileIfNotExist(file string, content string) error {
+	_, err := os.Stat(file)
+	// create file if it does not alreay exist:
+	if errors.Is(err, os.ErrNotExist) {
+		f, err := os.Create(file)
+		if err != nil {
+			return err
+		}
+		f.WriteString(content)
+		defer f.Close()
+	} else {
+		return fmt.Errorf("file %v already present", file)
+	}
+	return nil
 }
