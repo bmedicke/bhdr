@@ -24,22 +24,24 @@ import (
 //   └── logs TextView
 
 func spawnTUI(haConfig homeassistant.Config) {
-	// channels for communicating with HA:
+	// channels for communicating with home-assistant:
 	haEvents := make(chan string)
 	haCommands := make(chan string)
 
-	// fill haEntities with nodes:
+	// create node for home-assistant entities:
 	haEntities := tview.NewTreeNode("home-assistant")
-	entityNames := []string{"fan", "edison", "hue"} // TODO: read from json.
-	for _, name := range entityNames {
+	entityNames := map[string]string{
+		"fan":    "switch.tasmota_2",
+		"edison": "switch.tasmota_edison",
+		"hue":    "light.hue_go_1",
+	} // TODO: read from json.
+
+	// fill haEntities with nodes:
+	for name, entityID := range entityNames {
 		entity := tview.NewTreeNode(name)
-		entity.SetReference("")
+		entity.SetReference(entityID)
 		haEntities.AddChild(entity)
 	}
-
-	haEntities.GetChildren()[0].SetReference("switch.tasmota_2")
-	haEntities.GetChildren()[1].SetReference("switch.tasmota_edison")
-	haEntities.GetChildren()[2].SetReference("light.hue_go_1")
 
 	// create root tree node for the switches view:
 	switchesRoot := tview.NewTreeNode(".")
