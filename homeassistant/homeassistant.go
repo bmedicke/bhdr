@@ -17,8 +17,6 @@ type Config struct {
 	Token  string `json:"token"`
 }
 
-const path string = "/api/websocket"
-
 // Connect connects to Home Assistant and communicates with two channels:
 // * events: events from HA will be published here
 // * commands: commands will be sent to HA
@@ -26,7 +24,12 @@ func Connect(config Config, events chan string, commands chan string) {
 	// TODO clean up this entire function.
 	// TODO add proper error handling.
 	var messageID uint = 1
-	haURL := url.URL{Scheme: config.Scheme, Host: config.Server, Path: path}
+	const APIPath string = "/api/websocket"
+	haURL := url.URL{
+		Scheme: config.Scheme,
+		Host:   config.Server,
+		Path:   APIPath,
+	}
 
 	// connect:
 	connection, _, err := websocket.DefaultDialer.Dial(haURL.String(), nil)
