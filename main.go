@@ -1,25 +1,51 @@
 package main
 
 import (
+	_ "embed"
 	"encoding/json"
+	"flag"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 
 	"github.com/bmedicke/bhdr/homeassistant"
+	"github.com/bmedicke/bhdr/util"
 )
 
+//go:embed bhdr.json
+var bhdrJSON string
+
 func main() {
+	// register and parse flags:
+	createConfig := flag.Bool(
+		"create-config",
+		false,
+		"create bhdr.json config file in $HOME",
+	)
+	flag.Parse()
+
 	// get user's home folder:
 	home, err := os.UserHomeDir()
 	if err != nil {
 		log.Fatal("home folder error: ", err)
 	}
+	config := filepath.Join(home, "bhdr.json")
+
+	// handle --create-config flag:
+	if *createConfig {
+		err := util.CreateFileIfNotExist(config, bhdrJSON)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("file %v created\n", config)
+		os.Exit(0)
+	}
 
 	// read config file:
-	haConfigFile, err := os.Open(filepath.Join(home, "bhdr.json"))
+	haConfigFile, err := os.Open(config)
 	if err != nil {
-		log.Fatal(err, ". you can create one with: bhdr init")
+		log.Fatal(err, ". you can create one with: bhdr --create-config")
 	}
 
 	// unmarshal config:
