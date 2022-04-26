@@ -17,10 +17,16 @@ type Config struct {
 	Token  string `json:"token"`
 }
 
+// Command that can be sent to the commands channel.
+type Command struct {
+	EntityID string
+	Service  string
+}
+
 // Connect connects to Home Assistant and communicates with two channels:
 // * events: events from HA will be published here
 // * commands: commands will be sent to HA
-func Connect(config Config, events chan string, commands chan string) {
+func Connect(config Config, events chan string, commands chan Command) {
 	// TODO clean up this entire function.
 	// TODO add proper error handling.
 	var messageID uint = 1
@@ -64,17 +70,18 @@ func Connect(config Config, events chan string, commands chan string) {
 
 	// listen for commands and send them to HA:
 	for {
-		entityID := <-commands
-		target := map[string]interface{}{
-			"entity_id": entityID,
+		command := <-commands
+
+		target := map[string]string{
+			"entity_id": command.EntityID,
 		}
-		domain := strings.Split(entityID, ".")[0]
+		domain := strings.Split(command.EntityID, ".")[0]
 
 		haCommand := map[string]interface{}{
 			"id":      messageID,
 			"type":    "call_service",
 			"domain":  domain,
-			"service": "toggle",
+			"service": command.Service,
 			"target":  target,
 		}
 

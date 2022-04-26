@@ -26,7 +26,7 @@ import (
 func spawnTUI(haConfig homeassistant.Config) {
 	// channels for communicating with home-assistant:
 	haEvents := make(chan string)
-	haCommands := make(chan string)
+	haCommands := make(chan homeassistant.Command)
 
 	// create node for home-assistant entities:
 	haEntities := tview.NewTreeNode("home-assistant")
@@ -104,11 +104,10 @@ func spawnTUI(haConfig homeassistant.Config) {
 					status.SetText(t)
 				}
 			case ';': // toggle entity.
-				haCommands <- fmt.Sprint(selection.GetReference())
-			case '\'': // TODO: toggle entities, etc...
-				status.SetText(
-					string(event.Rune()) + " on " + selection.GetText(),
-				)
+				haCommands <- homeassistant.Command{
+					EntityID: fmt.Sprint(selection.GetReference()),
+					Service:  "toggle",
+				}
 			}
 			return event
 		},
