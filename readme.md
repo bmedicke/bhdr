@@ -7,6 +7,16 @@ BHDR is terminal user interface for Home Assistant.
 * uses the Home Assistant WebSocket API for the fastest possible response time
 * includes a WebSocket log-view for easy troubleshooting
 
+## toc
+
+<!-- vim-markdown-toc GFM -->
+
+* [installation](#installation)
+* [configuration](#configuration)
+* [key bindings](#key-bindings)
+
+<!-- vim-markdown-toc -->
+
 ## installation
 
 ```sh
