@@ -22,6 +22,7 @@ const path string = "/api/websocket"
 func GetEvents(config Config, channel chan string) {
 	// TODO clean up this entire function.
 	// TODO add proper error handling.
+	// TODO reuse connection for sending.
 	haURL := url.URL{Scheme: config.Scheme, Host: config.Server, Path: path}
 
 	// connect:

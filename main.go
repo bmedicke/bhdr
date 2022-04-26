@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/bmedicke/bhdr/homeassistant"
 	"github.com/bmedicke/bhdr/util"
@@ -13,10 +14,17 @@ import (
 )
 
 func main() {
-	// read config file:
-	haConfigFile, err := os.Open("bhdr.json")
+	// get user's home folder:
+	home, err := os.UserHomeDir()
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	// read config file:
+	haConfigFile, err := os.Open(filepath.Join(home, "bhdr.json"))
+	if err != nil {
+		log.Fatal(err)
+		// TODO: ask user to create config file, suggest bhdr init.
 	}
 
 	// unmarshel config:
@@ -111,6 +119,8 @@ func main() {
 			switch event.Rune() {
 			case 'd':
 				logs.SetText("")
+			case 'w':
+				// TODO: write log to file.
 			}
 			return event
 		},
