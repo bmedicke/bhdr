@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/bmedicke/bhdr/homeassistant"
 	"github.com/bmedicke/bhdr/util"
 	"github.com/gdamore/tcell/v2"
@@ -22,14 +24,22 @@ import (
 //   └── logs TextView
 
 func spawnTUI(haConfig homeassistant.Config) {
+	// channels for communicating with HA:
+	haEvents := make(chan string)
+	haCommands := make(chan string)
+
 	// fill haEntities with nodes:
 	haEntities := tview.NewTreeNode("home-assistant")
-	entityNames := []string{"edison", "hue", "fan"} // TODO: read from json.
+	entityNames := []string{"fan", "edison", "hue"} // TODO: read from json.
 	for _, name := range entityNames {
 		entity := tview.NewTreeNode(name)
-		entity.SetReference("ref for " + name)
+		entity.SetReference("")
 		haEntities.AddChild(entity)
 	}
+
+	haEntities.GetChildren()[0].SetReference("switch.tasmota_2")
+	haEntities.GetChildren()[1].SetReference("switch.tasmota_edison")
+	haEntities.GetChildren()[2].SetReference("light.hue_go_1")
 
 	// create root tree node for the switches view:
 	switchesRoot := tview.NewTreeNode(".")
@@ -91,7 +101,9 @@ func spawnTUI(haConfig homeassistant.Config) {
 						"\ncurrent: " + selection.GetText()
 					status.SetText(t)
 				}
-			case ';', '\'': // TODO: toggle entities, etc...
+			case ';': // toggle entity.
+				haCommands <- fmt.Sprint(selection.GetReference())
+			case '\'': // TODO: toggle entities, etc...
 				status.SetText(
 					string(event.Rune()) + " on " + selection.GetText(),
 				)
@@ -107,7 +119,7 @@ func spawnTUI(haConfig homeassistant.Config) {
 			case 'd':
 				logs.SetText("")
 			case 'w':
-				// TODO: write log to file.
+				util.CreateFileIfNotExist("bhdr_log.json", logs.GetText(true))
 			}
 			return event
 		},
@@ -143,9 +155,8 @@ func spawnTUI(haConfig homeassistant.Config) {
 	// preselect node:
 	switches.SetCurrentNode(switchesRoot)
 
-	// listen to Home Assistant events:
-	haEvents := make(chan string)
-	go homeassistant.GetEvents(haConfig, haEvents)
+	// connect to Home Assistant:
+	go homeassistant.Connect(haConfig, haEvents, haCommands)
 
 	// handle Home Assistant events:
 	go func() {

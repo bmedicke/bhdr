@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/url"
+	"strings"
 
 	"github.com/gorilla/websocket"
 )
@@ -18,11 +19,13 @@ type Config struct {
 
 const path string = "/api/websocket"
 
-// GetEvents published to a channel.
-func GetEvents(config Config, channel chan string) {
+// Connect published to Home Assistant with two channels:
+// * events: HA events will be published here
+// * commands: commands will be passed to HA
+func Connect(config Config, events chan string, commands chan string) {
+	var messageID uint = 1
 	// TODO clean up this entire function.
 	// TODO add proper error handling.
-	// TODO reuse connection for sending.
 	haURL := url.URL{Scheme: config.Scheme, Host: config.Server, Path: path}
 
 	// connect:
@@ -43,16 +46,37 @@ func GetEvents(config Config, channel chan string) {
 	// subscribe to all:
 	connection.WriteJSON(
 		map[string]interface{}{
-			"id":   1,
+			"id":   messageID,
 			"type": "subscribe_events",
 		},
 	)
+	messageID++
 
-	// listen for messages (blocking)
-	// and publish them on the channel:
+	// listen for messages and publish them on the events channel:
+	go func(events chan string, connection *websocket.Conn) {
+		for {
+			events <- getMessage(connection)
+		}
+	}(events, connection)
+
+	// listen for commands and send them to HA:
 	for {
-		m := getMessage(connection)
-		channel <- m
+		entityID := <-commands
+		target := map[string]interface{}{
+			"entity_id": entityID,
+		}
+		domain := strings.Split(entityID, ".")[0]
+
+		haCommand := map[string]interface{}{
+			"id":      messageID,
+			"type":    "call_service",
+			"domain":  domain,
+			"service": "toggle",
+			"target":  target,
+		}
+
+		connection.WriteJSON(haCommand)
+		messageID++
 	}
 }
 
