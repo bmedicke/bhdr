@@ -50,6 +50,8 @@ go install github.com/bmedicke/bhdr@latest
   * `q` quit
   * `k` move up
   * `j` move down
+  * `ctrl-f` move down a page
+  * `ctrl-b` move up a page
   * `g` move to top
   * `G` move to bottom
   * `]` activate *logs* view
@@ -61,7 +63,5 @@ go install github.com/bmedicke/bhdr@latest
   * `L` expand all nodes
   * `;` toggle entity (light, input_boolean, switch, etc.)
 * *logs* view
-  * `ctrl-f` move down page
-  * `ctrl-b` move up page
   * `d` clear the log
   * `w` write log to `bhdr_log.json`
