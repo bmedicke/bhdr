@@ -69,7 +69,8 @@ func IntuitiveViBindings(rune int32, view *tview.TreeView) {
 	}
 }
 
-// OverwriteFile replaces the content of a file:
+// OverwriteFile replaces the content of a file.
+// If the file does not exist, it will be created.
 func OverwriteFile(file string, content string) error {
 	f, err := os.Create(file)
 	if err != nil {
@@ -81,6 +82,7 @@ func OverwriteFile(file string, content string) error {
 }
 
 // CreateFileIfNotExist creates a file with a string as content.
+// Returns an error if it already exists.
 func CreateFileIfNotExist(file string, content string) error {
 	_, err := os.Stat(file)
 	// create file if it does not alreay exist:

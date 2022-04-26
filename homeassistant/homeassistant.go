@@ -19,13 +19,13 @@ type Config struct {
 
 const path string = "/api/websocket"
 
-// Connect published to Home Assistant with two channels:
-// * events: HA events will be published here
-// * commands: commands will be passed to HA
+// Connect connects to Home Assistant and communicates with two channels:
+// * events: events from HA will be published here
+// * commands: commands will be sent to HA
 func Connect(config Config, events chan string, commands chan string) {
-	var messageID uint = 1
 	// TODO clean up this entire function.
 	// TODO add proper error handling.
+	var messageID uint = 1
 	haURL := url.URL{Scheme: config.Scheme, Host: config.Server, Path: path}
 
 	// connect:
@@ -52,7 +52,7 @@ func Connect(config Config, events chan string, commands chan string) {
 	)
 	messageID++
 
-	// listen for messages and publish them on the events channel:
+	// listen for messages from HA and publish them on the events channel:
 	go func(events chan string, connection *websocket.Conn) {
 		for {
 			events <- getMessage(connection)

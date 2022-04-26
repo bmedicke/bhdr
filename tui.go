@@ -165,7 +165,7 @@ func spawnTUI(haConfig homeassistant.Config) {
 		for {
 			if logs != nil {
 				message := <-haEvents // get message before GetText()!
-				logs.SetText(logs.GetText(true) + "\n" + message)
+				logs.SetText(logs.GetText(true) + "\n" + message) // append message.
 				app.Draw() // required for external changes not based on key presses.
 			}
 		}
