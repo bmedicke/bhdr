@@ -7,6 +7,20 @@ import (
 	"github.com/rivo/tview"
 )
 
+// TUI structure, all types from tview:
+//
+// app Application
+//   │
+// layout Flex
+//   ├── switches TreeView
+//   │    └── switchesRoot TreeNode
+//   │					├── haEntities TreeNode
+//   │					│     └── ...
+//   │    			└── lorem TreeNode
+//   │								└── ...
+//   ├── status TextView
+//   └── logs TextView
+
 func spawnTUI(haConfig homeassistant.Config) {
 	// fill haEntities with nodes:
 	haEntities := tview.NewTreeNode("home-assistant")
