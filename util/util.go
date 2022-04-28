@@ -122,9 +122,7 @@ func HandleChords(
 	if chordLength > 0 {
 		nomen := chordmap[string((*chord).Buffer[0])]
 		if nomen == nil {
-			(*chord).Buffer = ""
-			(*chord).Action = ""
-			(*chord).Active = false
+			resetChord(chord)
 			return fmt.Errorf("invalid nomen [%v]", key)
 		}
 		(*chord).Active = true
@@ -136,9 +134,7 @@ func HandleChords(
 		verb := verbmap.(map[string]interface{})[string((*chord).Buffer[1])]
 
 		if verb == nil {
-			(*chord).Buffer = ""
-			(*chord).Action = ""
-			(*chord).Active = false
+			resetChord(chord)
 			return fmt.Errorf("invalid verb [%v]", key)
 		}
 
@@ -146,8 +142,7 @@ func HandleChords(
 			(*chord).Active = true
 			(*chord).Action += verb.(string)
 		} else {
-			(*chord).Buffer = ""
-			(*chord).Active = false
+			resetChord(chord)
 			(*chord).Action = verb.(string)
 		}
 	}
@@ -159,9 +154,7 @@ func HandleChords(
 		if strings.ContainsAny(third, "0123456789") {
 			(*chord).Action += third
 		} else {
-			(*chord).Buffer = ""
-			(*chord).Action = ""
-			(*chord).Active = false
+			resetChord(chord)
 			return fmt.Errorf("invalid value [%v]", third)
 		}
 		(*chord).Buffer = ""
@@ -172,4 +165,10 @@ func HandleChords(
 		(*chord).Action = ""
 	}
 	return nil
+}
+
+func resetChord(chord *KeyChord) {
+	(*chord).Active = false
+	(*chord).Action = ""
+	(*chord).Buffer = ""
 }
