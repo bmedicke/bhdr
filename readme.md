@@ -34,6 +34,8 @@ go install github.com/bmedicke/bhdr@latest
 * `"server"` point it to your Home Assistance instance
 * `"token"` your Home Assistant long-lived access token
   * to get a token go to your Home Assistant profile ([link for locally running server](http://localhost:8123/profile)) and click **create token**
+* `"ha-entities"` key-value-pairs of names for entities and their Home Assistant ID
+* `"chordmap"` representation of the Vi grammar
 
 ## key bindings
 
