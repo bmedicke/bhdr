@@ -100,14 +100,23 @@ func CreateFileIfNotExist(file string, content string) error {
 	return nil
 }
 
-// KeyChord .
+// KeyChord stores the following Vi grammar values:
+// * Active: true if a chord is currently in progress
+// * Buffer: holds the key sequence
+// * Action: result from successful chord conclusion
 type KeyChord struct {
 	Active bool
 	Buffer string
 	Action string
 }
 
-// HandleChords .
+// HandleChords emulates Vi-based key chords.
+// It updates a Chord struct based on a keyrune and
+// a JSON mapping (from chords to actions).
+// The rules are based on Vi grammar:
+// * a single letter nomen,
+// * followed by a single letter verb,
+// * followed by an optional digit (marked by a # in JSON).
 func HandleChords(
 	keyrune rune,
 	chord *KeyChord,
@@ -118,7 +127,7 @@ func HandleChords(
 	(*chord).Active = false
 	chordLength := len((*chord).Buffer)
 
-	// check verb:
+	// handle the verb:
 	if chordLength > 0 {
 		nomen := chordmap[string((*chord).Buffer[0])]
 		if nomen == nil {
@@ -128,7 +137,7 @@ func HandleChords(
 		(*chord).Active = true
 	}
 
-	// check nomen:
+	// handle the nomen:
 	if chordLength > 1 {
 		verbmap := chordmap[string((*chord).Buffer[0])]
 		verb := verbmap.(map[string]interface{})[string((*chord).Buffer[1])]
@@ -140,22 +149,22 @@ func HandleChords(
 
 		if strings.HasSuffix(verb.(string), "#") {
 			(*chord).Active = true
-			(*chord).Action += verb.(string)
+			(*chord).Action = verb.(string)
 		} else {
 			resetChord(chord)
 			(*chord).Action = verb.(string)
 		}
 	}
 
-	// check postfix:
+	// handle the postfix:
 	if chordLength > 2 {
-		third := string((*chord).Buffer[2])
+		postfix := string((*chord).Buffer[2])
 
-		if strings.ContainsAny(third, "0123456789") {
-			(*chord).Action += third
+		if strings.ContainsAny(postfix, "0123456789") {
+			(*chord).Action += postfix
 		} else {
 			resetChord(chord)
-			return fmt.Errorf("invalid value [%v]", third)
+			return fmt.Errorf("invalid value [%v]", postfix)
 		}
 		(*chord).Buffer = ""
 		(*chord).Active = false
