@@ -53,6 +53,9 @@ func spawnTUI(config map[string]interface{}, showLogs bool) {
 	// attach subnodes:
 	switchesRoot.AddChild(haEntities)
 
+	// create statusbar view:
+	statusbar := tview.NewTextView()
+
 	// create the status view:
 	status := tview.NewTextView()
 	status.SetBorder(true)
@@ -65,22 +68,25 @@ func spawnTUI(config map[string]interface{}, showLogs bool) {
 	switches.SetTopLevel(1) // hide root node.
 
 	// create the layout:
-	layout := tview.NewFlex()
-	layout.SetBorder(true).SetTitle("B H 🐙 D R")
-	layout.AddItem(switches, 0, 1, false)
-	layout.AddItem(status, 0, 1, false)
+	innerLayout := tview.NewFlex()
+	innerLayout.SetBorder(true).SetTitle("B H 🐙 D R")
+	innerLayout.AddItem(switches, 0, 1, false)
+	innerLayout.AddItem(status, 0, 1, false)
+	outerLayout := tview.NewFlex().SetDirection(tview.FlexRow)
+	outerLayout.AddItem(innerLayout, 0, 2, false)
+	outerLayout.AddItem(statusbar, 1, 0, false)
 
 	var logs *tview.TextView
 	if showLogs {
 		// create the logs view:
 		logs = tview.NewTextView()
 		logs.SetTitle("logs").SetBorder(true)
-		layout.AddItem(logs, 0, 2, false)
+		outerLayout.AddItem(logs, 0, 2, false)
 	}
 
 	// create the app:
 	app := tview.NewApplication()
-	app.SetRoot(layout, true)
+	app.SetRoot(outerLayout, true)
 	app.SetFocus(switches)
 
 	// for keeping track of vi-like key chords:
@@ -127,6 +133,7 @@ func spawnTUI(config map[string]interface{}, showLogs bool) {
 					}
 				}
 			}
+			statusbar.SetText(chord.Buffer)
 			return event
 		},
 	)
