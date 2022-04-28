@@ -103,7 +103,7 @@ func spawnTUI(config map[string]interface{}) {
 				case 'H', 'L', 'h', 'l': // use custom vi bindings:
 					util.IntuitiveViBindings(key, switches)
 					return nil // disable defaults.
-				case 'x', 'c', 'd', 'o', 'y', 'p': // runes that start a chord:
+				case 'c', 'd', 'o', 'y', 'p': // runes that start a chord:
 					if err := util.HandleChords(key, &chord, chordmap); err != nil {
 						status.SetText(fmt.Sprint(err))
 					}
