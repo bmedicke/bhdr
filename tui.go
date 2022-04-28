@@ -80,9 +80,9 @@ func spawnTUI(config map[string]interface{}) {
 	app.SetRoot(layout, true)
 	app.SetFocus(switches)
 
-	// switches keybindings:
-	chordmode := false
-	chordbuffer := ""
+	// for keeping track of vi-like key chords:
+	chord := util.KeyChord{Active: false, Buffer: "", Action: ""}
+	chordmap := config["chordmap"].(map[string]interface{})
 
 	switches.SetInputCapture(
 		func(event *tcell.EventKey) *tcell.EventKey {
