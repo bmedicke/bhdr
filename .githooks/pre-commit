@@ -15,10 +15,20 @@ go build $FILES
 
 if [ $? -ne 0 ]
 then
-  echo "❌ pre-commit hook failed."
+  echo "❌ pre-commit hook (build) failed."
   exit 1
 else
-  echo "✔️ pre-commit hook succeeded."
-  exit 0
+  echo "✔️ pre-commit hook (build) succeeded."
 fi
 
+# run all tests:
+go test ./... &> /dev/null
+
+if [ $? -ne 0 ]
+then
+  echo "❌ pre-commit hook (go test) failed."
+  exit 1
+else
+  echo "✔️ pre-commit hook (go test) succeeded."
+  exit 0
+fi
