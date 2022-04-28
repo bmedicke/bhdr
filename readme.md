@@ -29,16 +29,7 @@ go install github.com/bmedicke/bhdr@latest
 
 * edit `bhdr.json` in your home folder
 * if you don't have one bhdr will create one with `bhdr --create-config`
-
-**example configuration**
-```json
-{
-  "scheme": "ws",
-  "server": "127.0.0.1:8123",
-  "token": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-}
-```
-
+* see [bhdr.json](https://github.com/bmedicke/bhdr/blob/main/bhdr.json) for the template
 * `"scheme"` the connection protcol, this should be `ws`
 * `"server"` point it to your Home Assistance instance
 * `"token"` your Home Assistant long-lived access token
