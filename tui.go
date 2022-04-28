@@ -89,7 +89,9 @@ func spawnTUI(config map[string]interface{}) {
 			selection := switches.GetCurrentNode()
 
 			if chord.Active {
-				util.HandleChords(event.Rune(), &chord, chordmap)
+				if err := util.HandleChords(event.Rune(), &chord, chordmap); err != nil {
+					status.SetText(fmt.Sprint(err))
+				}
 				if chord.Action != "" {
 					status.SetText(chord.Action)
 				}
@@ -101,7 +103,9 @@ func spawnTUI(config map[string]interface{}) {
 					util.IntuitiveViBindings(event.Rune(), switches)
 					return nil // disable defaults.
 				case 'x', 'c', 'd', 'o', 'y', 'p': // runes that start a chord:
-					util.HandleChords(event.Rune(), &chord, chordmap)
+					if err := util.HandleChords(event.Rune(), &chord, chordmap); err != nil {
+						status.SetText(fmt.Sprint(err))
+					}
 				case 'i': // print information about current node.
 					if parent := util.GetParent(selection, switchesRoot); parent != nil {
 						t := "parent: " + parent.GetText() +
