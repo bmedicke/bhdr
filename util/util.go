@@ -130,7 +130,6 @@ func HandleChords(
 	// handle the verb:
 	if chordLength > 0 {
 		nomenmap := chordmap[string((*chord).Buffer[0])]
-		fmt.Println(nomenmap)
 		if nomenmap == nil {
 			resetChord(chord)
 			return fmt.Errorf("invalid nomen [%v]", key)
