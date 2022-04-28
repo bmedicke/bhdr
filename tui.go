@@ -87,10 +87,12 @@ func spawnTUI(config map[string]interface{}) {
 	switches.SetInputCapture(
 		func(event *tcell.EventKey) *tcell.EventKey {
 			selection := switches.GetCurrentNode()
-			if chordmode {
-				// TODO CLEAN UP!
-				chordbuffer += string(event.Rune())
-				chordmode = util.HandleChords(chordbuffer)
+
+			if chord.Active {
+				util.HandleChords(event.Rune(), &chord, chordmap)
+				if chord.Action != "" {
+					status.SetText(chord.Action)
+				}
 			} else {
 				switch event.Rune() {
 				case 'J', 'K': // disable tview's default bindings.
@@ -98,10 +100,8 @@ func spawnTUI(config map[string]interface{}) {
 				case 'H', 'L', 'h', 'l': // use custom vi bindings:
 					util.IntuitiveViBindings(event.Rune(), switches)
 					return nil // disable defaults.
-					// TODO CLEAN UP!
-				case 'c', 'd', 'a':
-					chordbuffer = string(event.Rune())
-					chordmode = util.HandleChords(chordbuffer)
+				case 'x', 'c', 'd', 'o', 'y', 'p': // runes that start a chord:
+					util.HandleChords(event.Rune(), &chord, chordmap)
 				case 'i': // print information about current node.
 					if parent := util.GetParent(selection, switchesRoot); parent != nil {
 						t := "parent: " + parent.GetText() +

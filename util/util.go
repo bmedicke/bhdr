@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/rivo/tview"
 )
@@ -99,37 +100,73 @@ func CreateFileIfNotExist(file string, content string) error {
 	return nil
 }
 
-// HandleChords is great (TRUE=CONTINUE)
-func HandleChords(chords string) bool {
-	switch chords[0] {
-	case 'c':
-		// fmt.Println("change")
-	case 'd':
-		// fmt.Println("delete")
-	default:
-		return false
+// KeyChord .
+type KeyChord struct {
+	Active bool
+	Buffer string
+	Action string
+}
+
+// HandleChords .
+func HandleChords(
+	keyrune rune,
+	chord *KeyChord,
+	chordmap map[string]interface{},
+) error {
+	key := string(keyrune)
+	(*chord).Buffer += key
+	(*chord).Active = false
+	chordLength := len((*chord).Buffer)
+
+	// check verb:
+	if chordLength > 0 {
+		nomen := chordmap[string((*chord).Buffer[0])]
+		if nomen == nil {
+			(*chord).Buffer = ""
+			(*chord).Action = ""
+			(*chord).Active = false
+			return fmt.Errorf("invalid nomen [%v]\n", key)
+		}
+		(*chord).Active = true
 	}
 
-	if len(chords) > 1 {
-		switch chords[1] {
-		case 'b':
-			// fmt.Println("brightness")
-		case 'c':
-			fmt.Println("toggle")
-			return false
-		default:
-			return false
+	// check nomen:
+	if chordLength > 1 {
+		verbmap := chordmap[string((*chord).Buffer[0])]
+		verb := verbmap.(map[string]interface{})[string((*chord).Buffer[1])]
+
+		if verb == nil {
+			(*chord).Buffer = ""
+			(*chord).Action = ""
+			(*chord).Active = false
+			return fmt.Errorf("invalid verb [%v]\n", key)
+		}
+
+		if strings.HasSuffix(verb.(string), "#") {
+			(*chord).Active = true
+			(*chord).Action += verb.(string)
+		} else {
+			(*chord).Buffer = ""
+			(*chord).Active = false
+			(*chord).Action = verb.(string)
 		}
 	}
 
-	if len(chords) > 2 {
-		switch chords[2] {
-		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
-			fmt.Println(chords)
-			return false
-		default:
-			return false
+	// check postfix:
+	if chordLength > 2 {
+		third := string((*chord).Buffer[2])
+
+		if strings.ContainsAny(third, "0123456789") {
+			(*chord).Action += third
+		} else {
+			return fmt.Errorf("invalid value [%v]", third)
 		}
+		(*chord).Buffer = ""
+		(*chord).Active = false
 	}
-	return true
+
+	if strings.HasSuffix((*chord).Action, "#") {
+		(*chord).Action = ""
+	}
+	return nil
 }
