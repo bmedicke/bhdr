@@ -1,5 +1,50 @@
 {
   "scheme": "ws",
   "server": "127.0.0.1:8123",
-  "token": ""
+  "token": "",
+  "ha-entities": {
+		"fan":    "switch.tasmota_2",
+		"edison": "switch.tasmota_edison",
+		"hue":    "light.hue_go_1"
+  },
+  "chordmap": {
+    "c": {
+      "c": "toggle:power",
+      "p": "toggle:power",
+      "h": "set:hue:#",
+      "s": "set:saturation:#",
+      "b": "set:brightness:#",
+      "e": "set:effect:#"
+    },
+    "d": {
+      "d": "turn_off:power",
+      "p": "turn_off:power",
+      "h": "set:hue:0",
+      "s": "set:saturation:0",
+      "b": "set:brightness:0",
+      "e": "set:effect:0"
+    },
+    "o": {
+      "o": "turn_on:power",
+      "p": "turn_on:power",
+      "h": "set:hue:100",
+      "s": "set:saturation:100",
+      "b": "set:brightness:100",
+      "e": "set:effect:1"
+    },
+    "y": {
+      "y": "copy:all",
+      "h": "copy:hue",
+      "s": "copy:saturation",
+      "b": "copy:brightness",
+      "e": "copy:effect"
+    },
+    "p": {
+      "p": "paste:all",
+      "h": "paste:hue",
+      "s": "paste:saturation",
+      "b": "paste:brightness",
+      "e": "paste:effect"
+    }
+  }
 }
