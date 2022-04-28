@@ -15,6 +15,7 @@ BHDR is terminal user interface for Home Assistant.
 
 * [installation](#installation)
 * [configuration](#configuration)
+* [usage](#usage)
 * [key bindings](#key-bindings)
 
 <!-- vim-markdown-toc -->
@@ -29,13 +30,20 @@ go install github.com/bmedicke/bhdr@latest
 
 * edit `bhdr.json` in your home folder
 * if you don't have one bhdr will create one with `bhdr --create-config`
-* see [bhdr.json](https://github.com/bmedicke/bhdr/blob/main/bhdr.json) for the template
+  * see [bhdr.json](https://github.com/bmedicke/bhdr/blob/main/bhdr.json) for the template
 * `"scheme"` the connection protcol, this should be `ws`
 * `"server"` point it to your Home Assistance instance
 * `"token"` your Home Assistant long-lived access token
   * to get a token go to your Home Assistant profile ([link for locally running server](http://localhost:8123/profile)) and click **create token**
 * `"ha-entities"` key-value-pairs of names for entities and their Home Assistant ID
 * `"chordmap"` representation of the Vi grammar
+
+## usage
+
+The following flags are available:
+
+* `--create-config` creates a template config in your home folder
+* `--show-logs` adds a logs view that outputs websocket messages
 
 ## key bindings
 

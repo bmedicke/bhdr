@@ -23,7 +23,7 @@ import (
 //   ├── status TextView
 //   └── logs TextView
 
-func spawnTUI(config map[string]interface{}) {
+func spawnTUI(config map[string]interface{}, showLogs bool) {
 	// channels for communicating with home-assistant:
 	haEvents := make(chan string)
 	haCommands := make(chan homeassistant.Command)
@@ -53,10 +53,6 @@ func spawnTUI(config map[string]interface{}) {
 	// attach subnodes:
 	switchesRoot.AddChild(haEntities)
 
-	// create the logs view:
-	logs := tview.NewTextView()
-	logs.SetTitle("logs").SetBorder(true)
-
 	// create the status view:
 	status := tview.NewTextView()
 	status.SetBorder(true)
@@ -73,7 +69,14 @@ func spawnTUI(config map[string]interface{}) {
 	layout.SetBorder(true).SetTitle("B H 🐙 D R")
 	layout.AddItem(switches, 0, 1, false)
 	layout.AddItem(status, 0, 1, false)
-	layout.AddItem(logs, 0, 2, false)
+
+	var logs *tview.TextView
+	if showLogs {
+		// create the logs view:
+		logs = tview.NewTextView()
+		logs.SetTitle("logs").SetBorder(true)
+		layout.AddItem(logs, 0, 2, false)
+	}
 
 	// create the app:
 	app := tview.NewApplication()
@@ -128,20 +131,22 @@ func spawnTUI(config map[string]interface{}) {
 		},
 	)
 
-	// logs keybindings:
-	logs.SetInputCapture(
-		func(event *tcell.EventKey) *tcell.EventKey {
-			key := event.Rune()
+	if showLogs {
+		// logs keybindings:
+		logs.SetInputCapture(
+			func(event *tcell.EventKey) *tcell.EventKey {
+				key := event.Rune()
 
-			switch key {
-			case 'd':
-				logs.SetText("")
-			case 'w':
-				util.OverwriteFile("bhdr_log.json", logs.GetText(true))
-			}
-			return event
-		},
-	)
+				switch key {
+				case 'd':
+					logs.SetText("")
+				case 'w':
+					util.OverwriteFile("bhdr_log.json", logs.GetText(true))
+				}
+				return event
+			},
+		)
+	}
 
 	// global keybindings:
 	app.SetInputCapture(
@@ -150,13 +155,17 @@ func spawnTUI(config map[string]interface{}) {
 
 			switch key {
 			case '[': // focus switches view.
-				app.SetFocus(switches)
-				switches.SetBorderColor(tcell.ColorGreen)
-				logs.SetBorderColor(tcell.ColorWhite)
+				if showLogs {
+					app.SetFocus(switches)
+					switches.SetBorderColor(tcell.ColorGreen)
+					logs.SetBorderColor(tcell.ColorWhite)
+				}
 			case ']': // focus logs view.
-				app.SetFocus(logs)
-				switches.SetBorderColor(tcell.ColorWhite)
-				logs.SetBorderColor(tcell.ColorGreen)
+				if showLogs {
+					app.SetFocus(logs)
+					switches.SetBorderColor(tcell.ColorWhite)
+					logs.SetBorderColor(tcell.ColorGreen)
+				}
 			case 'q': // quit the program.
 				app.Stop()
 			}

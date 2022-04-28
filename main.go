@@ -22,6 +22,11 @@ func main() {
 		false,
 		"create bhdr.json config file in $HOME",
 	)
+	showLogs := flag.Bool(
+		"show-logs",
+		false,
+		"displays a log viewer",
+	)
 	flag.Parse()
 
 	// get user's home folder:
@@ -55,5 +60,5 @@ func main() {
 		log.Fatal("config file parsing error: ", err)
 	}
 
-	spawnTUI(config)
+	spawnTUI(config, *showLogs)
 }
