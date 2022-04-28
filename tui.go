@@ -87,23 +87,24 @@ func spawnTUI(config map[string]interface{}) {
 	switches.SetInputCapture(
 		func(event *tcell.EventKey) *tcell.EventKey {
 			selection := switches.GetCurrentNode()
+			key := event.Rune()
 
 			if chord.Active {
-				if err := util.HandleChords(event.Rune(), &chord, chordmap); err != nil {
+				if err := util.HandleChords(key, &chord, chordmap); err != nil {
 					status.SetText(fmt.Sprint(err))
 				}
 				if chord.Action != "" {
 					status.SetText(chord.Action)
 				}
 			} else {
-				switch event.Rune() {
+				switch key {
 				case 'J', 'K': // disable tview's default bindings.
 					return nil
 				case 'H', 'L', 'h', 'l': // use custom vi bindings:
-					util.IntuitiveViBindings(event.Rune(), switches)
+					util.IntuitiveViBindings(key, switches)
 					return nil // disable defaults.
 				case 'x', 'c', 'd', 'o', 'y', 'p': // runes that start a chord:
-					if err := util.HandleChords(event.Rune(), &chord, chordmap); err != nil {
+					if err := util.HandleChords(key, &chord, chordmap); err != nil {
 						status.SetText(fmt.Sprint(err))
 					}
 				case 'i': // print information about current node.
@@ -130,7 +131,9 @@ func spawnTUI(config map[string]interface{}) {
 	// logs keybindings:
 	logs.SetInputCapture(
 		func(event *tcell.EventKey) *tcell.EventKey {
-			switch event.Rune() {
+			key := event.Rune()
+
+			switch key {
 			case 'd':
 				logs.SetText("")
 			case 'w':
@@ -143,7 +146,9 @@ func spawnTUI(config map[string]interface{}) {
 	// global keybindings:
 	app.SetInputCapture(
 		func(event *tcell.EventKey) *tcell.EventKey {
-			switch event.Rune() {
+			key := event.Rune()
+
+			switch key {
 			case '[': // focus switches view.
 				app.SetFocus(switches)
 				switches.SetBorderColor(tcell.ColorGreen)
