@@ -125,7 +125,7 @@ func HandleChords(
 			(*chord).Buffer = ""
 			(*chord).Action = ""
 			(*chord).Active = false
-			return fmt.Errorf("invalid nomen [%v]\n", key)
+			return fmt.Errorf("invalid nomen [%v]", key)
 		}
 		(*chord).Active = true
 	}
@@ -139,7 +139,7 @@ func HandleChords(
 			(*chord).Buffer = ""
 			(*chord).Action = ""
 			(*chord).Active = false
-			return fmt.Errorf("invalid verb [%v]\n", key)
+			return fmt.Errorf("invalid verb [%v]", key)
 		}
 
 		if strings.HasSuffix(verb.(string), "#") {
