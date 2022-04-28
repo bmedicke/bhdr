@@ -159,6 +159,9 @@ func HandleChords(
 		if strings.ContainsAny(third, "0123456789") {
 			(*chord).Action += third
 		} else {
+			(*chord).Buffer = ""
+			(*chord).Action = ""
+			(*chord).Active = false
 			return fmt.Errorf("invalid value [%v]", third)
 		}
 		(*chord).Buffer = ""
