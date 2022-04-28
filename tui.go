@@ -52,12 +52,6 @@ func spawnTUI(config map[string]interface{}) {
 
 	// attach subnodes:
 	switchesRoot.AddChild(haEntities)
-	switchesRoot.AddChild(
-		tview.NewTreeNode("lorem").
-			AddChild(tview.NewTreeNode("ipsum")).
-			AddChild(tview.NewTreeNode("dolor").
-				AddChild(tview.NewTreeNode("sit"))),
-	)
 
 	// create the logs view:
 	logs := tview.NewTextView()
