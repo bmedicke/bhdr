@@ -37,14 +37,10 @@ func spawnTUI(config map[string]interface{}) {
 
 	// create node for home-assistant entities:
 	haEntities := tview.NewTreeNode("home-assistant")
-	entityNames := map[string]string{
-		"fan":    "switch.tasmota_2",
-		"edison": "switch.tasmota_edison",
-		"hue":    "light.hue_go_1",
-	} // TODO: read from json.
+	entityMap := config["ha-entities"].(map[string]interface{})
 
 	// fill haEntities with nodes:
-	for name, entityID := range entityNames {
+	for name, entityID := range entityMap {
 		entity := tview.NewTreeNode(name)
 		entity.SetReference(entityID)
 		haEntities.AddChild(entity)
