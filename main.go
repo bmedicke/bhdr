@@ -9,7 +9,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/bmedicke/bhdr/homeassistant"
 	"github.com/bmedicke/bhdr/util"
 )
 
@@ -30,31 +29,31 @@ func main() {
 	if err != nil {
 		log.Fatal("home folder error: ", err)
 	}
-	config := filepath.Join(home, "bhdr.json")
+	configFile := filepath.Join(home, "bhdr.json")
 
 	// handle --create-config flag:
 	if *createConfig {
-		err := util.CreateFileIfNotExist(config, bhdrJSON)
+		err := util.CreateFileIfNotExist(configFile, bhdrJSON)
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Printf("file %v created\n", config)
+		fmt.Printf("file %v created\n", configFile)
 		os.Exit(0)
 	}
 
 	// read config file:
-	haConfigFile, err := os.Open(config)
+	haConfigFile, err := os.Open(configFile)
 	if err != nil {
 		log.Fatal(err, ". you can create one with: bhdr --create-config")
 	}
 
 	// unmarshal config:
-	var haConfig homeassistant.Config
+	var config map[string]interface{}
 	jsonParser := json.NewDecoder(haConfigFile)
-	err = jsonParser.Decode(&haConfig)
+	err = jsonParser.Decode(&config)
 	if err != nil {
 		log.Fatal("config file parsing error: ", err)
 	}
 
-	spawnTUI(haConfig)
+	spawnTUI(config)
 }

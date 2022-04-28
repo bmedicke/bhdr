@@ -23,10 +23,17 @@ import (
 //   ├── status TextView
 //   └── logs TextView
 
-func spawnTUI(haConfig homeassistant.Config) {
+func spawnTUI(config map[string]interface{}) {
 	// channels for communicating with home-assistant:
 	haEvents := make(chan string)
 	haCommands := make(chan homeassistant.Command)
+
+	// create HA config from global config:
+	haConfig := homeassistant.Config{
+		Scheme: config["scheme"].(string),
+		Server: config["server"].(string),
+		Token:  config["token"].(string),
+	}
 
 	// create node for home-assistant entities:
 	haEntities := tview.NewTreeNode("home-assistant")
