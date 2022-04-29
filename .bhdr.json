@@ -2,11 +2,11 @@
   "scheme": "ws",
   "server": "127.0.0.1:8123",
   "token": "",
-  "ha-entities": {
-		"fan":    "switch.tasmota_2",
-		"edison": "switch.tasmota_edison",
-		"hue":    "light.hue_go_1"
-  },
+  "ha-entities": [
+    {"id": "fan", "entity-id": "switch.tasmota_2"},
+    {"id": "edison", "entity-id": "switch.tasmota_edison"},
+    {"id": "hue", "entity-id": "light.hue_go_1"}
+  ],
   "chordmap": {
     "c": {
       "c": "toggle:power",
