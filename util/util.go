@@ -131,7 +131,7 @@ func HandleChords(
 	if chordLength > 0 {
 		nomenmap := chordmap[string((*chord).Buffer[0])]
 		if nomenmap == nil {
-			resetChord(chord)
+			ResetChord(chord)
 			return fmt.Errorf("invalid nomen [%v]", key)
 		}
 		(*chord).Active = true
@@ -143,7 +143,7 @@ func HandleChords(
 		verb := nomenmap.(map[string]interface{})[string((*chord).Buffer[1])]
 
 		if verb == nil {
-			resetChord(chord)
+			ResetChord(chord)
 			return fmt.Errorf("invalid verb [%v]", key)
 		}
 
@@ -151,7 +151,7 @@ func HandleChords(
 			(*chord).Active = true
 			(*chord).Action = verb.(string)
 		} else {
-			resetChord(chord)
+			ResetChord(chord)
 			(*chord).Action = verb.(string)
 		}
 	}
@@ -163,7 +163,7 @@ func HandleChords(
 		if strings.ContainsAny(postfix, "0123456789") {
 			(*chord).Action += postfix
 		} else {
-			resetChord(chord)
+			ResetChord(chord)
 			return fmt.Errorf("invalid value [%v]", postfix)
 		}
 		(*chord).Buffer = ""
@@ -176,7 +176,9 @@ func HandleChords(
 	return nil
 }
 
-func resetChord(chord *KeyChord) {
+// ResetChord disables .Active and clears the
+// .Action and .Buffer strings.
+func ResetChord(chord *KeyChord) {
 	(*chord).Active = false
 	(*chord).Action = ""
 	(*chord).Buffer = ""

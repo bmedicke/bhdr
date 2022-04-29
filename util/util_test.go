@@ -12,7 +12,7 @@ func TestResetChord(t *testing.T) {
 		Buffer: "buffer",
 		Action: "action",
 	}
-	resetChord(&chord)
+	ResetChord(&chord)
 
 	if chord.Active != false {
 		t.Fatal("Active not false")

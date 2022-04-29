@@ -98,6 +98,10 @@ func spawnTUI(config map[string]interface{}, showLogs bool) {
 			selection := switches.GetCurrentNode()
 			key := event.Rune()
 
+			if event.Key() == tcell.KeyEsc {
+				util.ResetChord(&chord)
+			}
+
 			if chord.Active {
 				if err := util.HandleChords(key, &chord, chordmap); err != nil {
 					status.SetText(fmt.Sprint(err))
