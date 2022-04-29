@@ -12,7 +12,7 @@ import (
 	"github.com/bmedicke/bhdr/util"
 )
 
-//go:embed bhdr.json
+//go:embed .bhdr.json
 var bhdrJSON string
 
 func main() {
@@ -20,7 +20,7 @@ func main() {
 	createConfig := flag.Bool(
 		"create-config",
 		false,
-		"create bhdr.json config file in $HOME",
+		"create .bhdr.json config file in $HOME",
 	)
 	showLogs := flag.Bool(
 		"show-logs",
@@ -34,7 +34,7 @@ func main() {
 	if err != nil {
 		log.Fatal("home folder error: ", err)
 	}
-	configFile := filepath.Join(home, "bhdr.json")
+	configFile := filepath.Join(home, ".bhdr.json")
 
 	// handle --create-config flag:
 	if *createConfig {
