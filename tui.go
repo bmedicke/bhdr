@@ -13,6 +13,8 @@ import (
 //
 // app Application
 //   │
+// frame Frame
+//   │
 // outerLayout Flex (FlexRow)
 //   │
 //   ├── innerLayout Flex (FlexColumn)
@@ -57,6 +59,7 @@ func spawnTUI(config map[string]interface{}, showLogs bool) {
 
 	// create statusbar view:
 	statusbar := tview.NewTextView()
+	statusbar.SetBackgroundColor(tcell.ColorDarkOliveGreen)
 
 	// create the status view:
 	status := tview.NewTextView()
@@ -71,12 +74,14 @@ func spawnTUI(config map[string]interface{}, showLogs bool) {
 
 	// create the layout:
 	innerLayout := tview.NewFlex()
-	innerLayout.SetBorder(true).SetTitle("B H 🐙 D R")
 	innerLayout.AddItem(switches, 0, 1, false)
 	innerLayout.AddItem(status, 0, 1, false)
 	outerLayout := tview.NewFlex().SetDirection(tview.FlexRow)
 	outerLayout.AddItem(innerLayout, 0, 2, false)
-	outerLayout.AddItem(statusbar, 1, 0, false)
+
+	frame := tview.NewFrame(outerLayout)
+	frame.SetBorders(1, 0, 0, 0, 0, 0)
+	frame.AddText("B H 🐙 D R", true, tview.AlignCenter, tcell.ColorOlive)
 
 	var logs *tview.TextView
 	if showLogs {
@@ -85,10 +90,11 @@ func spawnTUI(config map[string]interface{}, showLogs bool) {
 		logs.SetTitle("logs").SetBorder(true)
 		outerLayout.AddItem(logs, 0, 2, false)
 	}
+	outerLayout.AddItem(statusbar, 1, 0, false)
 
 	// create the app:
 	app := tview.NewApplication()
-	app.SetRoot(outerLayout, true)
+	app.SetRoot(frame, true)
 	app.SetFocus(switches)
 
 	// for keeping track of vi-like key chords:
