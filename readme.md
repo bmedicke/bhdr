@@ -42,6 +42,7 @@ go install github.com/bmedicke/bhdr@latest
 
 The following flags are available:
 
+* `--config <file>` load custom configuration
 * `--create-config` creates a template config in your home folder
 * `--show-logs` adds a logs view that outputs websocket messages
 

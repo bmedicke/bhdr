@@ -27,23 +27,33 @@ func main() {
 		false,
 		"displays a log viewer",
 	)
+	customConfig := flag.String(
+		"config",
+		"",
+		"load configuration from custom filepath",
+	)
 	flag.Parse()
 
-	// get user's home folder:
-	home, err := os.UserHomeDir()
-	if err != nil {
-		log.Fatal("home folder error: ", err)
-	}
-	configFile := filepath.Join(home, ".bhdr.json")
-
-	// handle --create-config flag:
-	if *createConfig {
-		err := util.CreateFileIfNotExist(configFile, bhdrJSON)
+	var configFile string
+	if *customConfig != "" {
+		configFile = *customConfig
+	} else {
+		// get user's home folder:
+		home, err := os.UserHomeDir()
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal("home folder error: ", err)
 		}
-		fmt.Printf("file %v created\n", configFile)
-		os.Exit(0)
+		configFile = filepath.Join(home, ".bhdr.json")
+
+		// handle --create-config flag:
+		if *createConfig {
+			err := util.CreateFileIfNotExist(configFile, bhdrJSON)
+			if err != nil {
+				log.Fatal(err)
+			}
+			fmt.Printf("file %v created\n", configFile)
+			os.Exit(0)
+		}
 	}
 
 	// read config file:
