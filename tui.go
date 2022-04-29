@@ -13,14 +13,15 @@ import (
 //
 // app Application
 //   │
-// layout Flex
-//   ├── switches TreeView
-//   │    └── switchesRoot TreeNode
-//   │					├── haEntities TreeNode
-//   │					│     └── ...
-//   │    			└── lorem TreeNode
-//   │								└── ...
-//   ├── status TextView
+// outerLayout Flex (FlexRow)
+//   │
+//   ├── innerLayout Flex (FlexColumn)
+//   │     ├── switches TreeView
+//   │     │    └── switchesRoot TreeNode
+//   │     │					└── haEntities TreeNode
+//   │     │					      └── ...
+//   │     └── status TextView
+//   ├── statusbar TextView
 //   └── logs TextView
 
 func spawnTUI(config map[string]interface{}, showLogs bool) {
