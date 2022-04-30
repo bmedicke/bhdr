@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/bmedicke/bhdr/homeassistant"
@@ -40,13 +41,19 @@ func spawnTUI(config map[string]interface{}, showLogs bool) {
 
 	// create node for home-assistant entities:
 	haEntities := tview.NewTreeNode("home-assistant")
+	haEntities.SetReference(homeassistant.Data{})
 	entitySlice := config["ha-entities"].([]interface{})
 
 	// fill entities with nodes:
 	for _, entityJSON := range entitySlice {
 		entityMap := entityJSON.(map[string]interface{})
 		entity := tview.NewTreeNode(entityMap["id"].(string))
-		entity.SetReference(entityMap["entity-id"].(string))
+		entity.SetReference(
+			homeassistant.Data{
+				EntityID: entityMap["entity-id"].(string),
+				NickName: entityMap["id"].(string),
+			},
+		)
 		haEntities.AddChild(entity)
 	}
 
@@ -140,7 +147,7 @@ func spawnTUI(config map[string]interface{}, showLogs bool) {
 					}
 				case ';': // toggle entity.
 					haCommands <- homeassistant.Command{
-						EntityID: fmt.Sprint(selection.GetReference()),
+						EntityID: selection.GetReference().(homeassistant.Data).EntityID,
 						Service:  "toggle",
 					}
 				}
