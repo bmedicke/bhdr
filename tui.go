@@ -146,10 +146,16 @@ func spawnTUI(config map[string]interface{}, showLogs bool) {
 							"\ncurrent: " + selection.GetText()
 						status.SetText(t)
 					}
+				case 'R': // refetch all states from HA.
+					haCommands <- homeassistant.Command{
+						Type: "get_states",
+					}
 				case ';': // toggle entity.
 					haCommands <- homeassistant.Command{
 						EntityID: selection.GetReference().(homeassistant.Data).EntityID,
 						Service:  "toggle",
+						Type:     "call_service",
+						Domain:   true,
 					}
 				}
 			}
