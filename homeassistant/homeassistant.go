@@ -10,19 +10,6 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-// Config for the connection:
-type Config struct {
-	Scheme string `json:"scheme"`
-	Server string `json:"server"`
-	Token  string `json:"token"`
-}
-
-// Command that can be sent to the commands channel.
-type Command struct {
-	EntityID string
-	Service  string
-}
-
 // Connect connects to Home Assistant and communicates with two channels:
 // * events: events from HA will be published here
 // * commands: commands will be sent to HA
