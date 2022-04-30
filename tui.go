@@ -215,19 +215,63 @@ func spawnTUI(config map[string]interface{}, showLogs bool) {
 	// handle Home Assistant events:
 	go func() {
 		// TODO clean up this entire function.
+		nodeFormat := "%s == %s"
+
 		for {
+			m := homeassistant.Message{}
+			message := <-haEvents
+			json.Unmarshal([]byte(message), &m)
+
+			// handle event type messages:
+			if m.Event.Type == "state_changed" {
+				for _, node := range haEntities.GetChildren() {
+					r := node.GetReference().(homeassistant.Data)
+					if r.EntityID == m.Event.Data.EntityID {
+						node.SetText(
+							fmt.Sprintf(
+								nodeFormat,
+								r.NickName,
+								m.Event.Data.NewState.State,
+							),
+						)
+					}
+				}
+			}
+
+			// handle result type messages:
+			if len(m.Result) > 0 {
+				for _, node := range haEntities.GetChildren() {
+					r := node.GetReference().(homeassistant.Data)
+					for _, result := range m.Result {
+						if r.EntityID == result.EntityID {
+							node.SetText(
+								fmt.Sprintf(
+									nodeFormat,
+									r.NickName,
+									result.State,
+								),
+							)
+						}
+					}
+				}
+			}
+
+			// update logs view:
 			if logs != nil {
-				message := <-haEvents // get message before GetText()!
 				current := logs.GetText(true)
 				if len(current) == 0 {
 					logs.SetText(message)
 				} else {
 					logs.SetText(current + ",\n" + message) // append message.
 				}
-				app.Draw() // required for external changes not based on key presses.
 			}
+
+			app.Draw() // external changes require a manual redraw.
 		}
 	}()
+
+	// fetch all states at startup.
+	haCommands <- homeassistant.Command{Type: "get_states"}
 
 	app.Run()
 }
