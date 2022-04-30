@@ -206,14 +206,6 @@ func spawnTUI(config map[string]interface{}, showLogs bool) {
 		},
 	)
 
-	// handle pressing Enter on a node:
-	switches.SetSelectedFunc(func(node *tview.TreeNode) {})
-
-	// called when focusing a node:
-	switches.SetChangedFunc(
-		func(node *tview.TreeNode) { status.SetTitle(node.GetText()) },
-	)
-
 	// preselect node:
 	switches.SetCurrentNode(switchesRoot)
 
