@@ -57,19 +57,24 @@ func Connect(config Config, events chan string, commands chan Command) {
 	// listen for commands and send them to HA:
 	for {
 		command := <-commands
+		haCommand := map[string]interface{}{}
 
-		target := map[string]string{
-			"entity_id": command.EntityID,
+		if command.EntityID != "" {
+			haCommand["target"] = map[string]string{
+				"entity_id": command.EntityID,
+			}
 		}
-		domain := strings.Split(command.EntityID, ".")[0]
 
-		haCommand := map[string]interface{}{
-			"id":      messageID,
-			"type":    "call_service",
-			"domain":  domain,
-			"service": command.Service,
-			"target":  target,
+		if command.Service != "" {
+			haCommand["service"] = command.Service
 		}
+
+		if command.Domain {
+			haCommand["domain"] = strings.Split(command.EntityID, ".")[0]
+		}
+
+		haCommand["type"] = command.Type
+		haCommand["id"] = messageID
 
 		connection.WriteJSON(haCommand)
 		messageID++
