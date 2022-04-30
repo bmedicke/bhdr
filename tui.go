@@ -70,7 +70,7 @@ func spawnTUI(config map[string]interface{}, showLogs bool) {
 
 	// create the status view:
 	status := tview.NewTextView()
-	status.SetBorder(true)
+	status.SetBorder(true).SetTitle("status")
 
 	// create the switches view:
 	switches := tview.NewTreeView()
