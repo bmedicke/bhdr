@@ -14,7 +14,6 @@ import (
 // * events: events from HA will be published here
 // * commands: commands will be sent to HA
 func Connect(config Config, events chan string, commands chan Command) {
-	// TODO clean up this entire function.
 	// TODO add proper error handling.
 	var messageID uint = 1
 	const APIPath string = "/api/websocket"
