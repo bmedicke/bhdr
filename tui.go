@@ -108,6 +108,7 @@ func spawnTUI(config map[string]interface{}, showLogs bool) {
 	chord := util.KeyChord{Active: false, Buffer: "", Action: ""}
 	chordmap := config["chordmap"].(map[string]interface{})
 
+	// switches keybindings:
 	switches.SetInputCapture(
 		func(event *tcell.EventKey) *tcell.EventKey {
 			selection := switches.GetCurrentNode()
@@ -157,8 +158,8 @@ func spawnTUI(config map[string]interface{}, showLogs bool) {
 		},
 	)
 
+	// logs keybindings:
 	if showLogs {
-		// logs keybindings:
 		logs.SetInputCapture(
 			func(event *tcell.EventKey) *tcell.EventKey {
 				key := event.Rune()
@@ -215,6 +216,7 @@ func spawnTUI(config map[string]interface{}, showLogs bool) {
 
 	// handle Home Assistant events:
 	go func() {
+		// TODO clean up this entire function.
 		for {
 			if logs != nil {
 				message := <-haEvents // get message before GetText()!
