@@ -89,6 +89,7 @@ func spawnTUI(config map[string]interface{}, showLogs bool) {
 	frame := tview.NewFrame(outerLayout)
 	frame.SetBorders(0, 0, 0, 0, 0, 0)
 	frame.AddText("B H 🐙 D R", true, tview.AlignCenter, tcell.ColorOlive)
+	frame.SetBackgroundColor(tcell.Color236)
 
 	var logs *tview.TextView
 	if showLogs {
