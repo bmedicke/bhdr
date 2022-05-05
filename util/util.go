@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/rivo/tview"
 )
@@ -182,4 +183,14 @@ func ResetChord(chord *KeyChord) {
 	(*chord).Active = false
 	(*chord).Action = ""
 	(*chord).Buffer = ""
+}
+
+// AttachTicker adds a ticker to a time.Time channel and
+// immediatelty sends a tick (unlike a regular ticker).
+func AttachTicker(timer chan time.Time, interval time.Duration) {
+	timer <- time.Now() // send one tick immediately.
+	t := time.NewTicker(interval)
+	for c := range t.C {
+		timer <- c
+	}
 }
